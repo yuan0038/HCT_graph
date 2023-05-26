@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="HCT_graph_.7" confirmBeforeDeletion="false" autoUploadExternalChanges="true">
+    <option name="confirmBeforeDeletion" value="false" />
+    <serverData>
+      <paths name="HCT_graph">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="HCT_graph_.7">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="ubuntu@10.16.70.164:22 password (1)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="ubuntu@172.20.5.7:22 password (2)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/pycharm_project_668" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="ubuntu@172.20.5.7:22 password (3)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="ubuntu@172.20.5.8:22 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="ubuntu@172.20.5.8:22 password (7)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>

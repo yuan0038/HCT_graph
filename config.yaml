@@ -1,0 +1,5 @@
+{
+  path:{
+         data_path: '/home/ubuntu/lxd-workplace/lzy/FewShotLearning/dataset/Mini-ImageNet/train_train'
+  }
+}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="63004ac2-c3e2-4e76-bb74-f87fc5a9b842" name="HCT_graph">
+        <fileTransfer rootFolder="/home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph" accessType="SFTP" host="172.20.5.8" port="22" sshConfigId="b606798c-57fd-42a8-b7bb-834f23390cf2" sshConfig="ubuntu@172.20.5.8:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="5f1d4238-de66-440e-9abf-112df3a3d4ad" name="HCT_graph_.7">
+        <fileTransfer accessType="SFTP" host="172.20.5.7" port="22" sshConfigId="918d8a9d-cc4d-4a78-a9a8-8fc1d7c2777b" sshConfig="ubuntu@172.20.5.7:22 password" />
+      </webServer>
+    </option>
+  </component>
+</project>

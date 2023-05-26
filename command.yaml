@@ -1,0 +1,23 @@
+python -u -m torch.distributed.launch --nproc_per_node=2 main_hct_first.py --arch vit_small --data_path /home/ubuntu/lxd-workplace/lzy/FewShotLearning/dataset/Mini-ImageNet/train_train --output_dir /home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph/results/miniImageNet
+python eval_hct_first.py --arch vit_small --server mini --partition test --checkpoint_key student --ckp_path /home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCTransformer/checkpoint_mini.pth --num_shots 1
+python -u -m torch.distributed.launch --nproc_per_node=4 main_hct_pooling.py --arch vit_small --data_path /home/ubuntu/lxd-workplace/lzy/FewShotLearning/dataset/Mini-ImageNet/train_train --output_dir ./results/test_run_pooling --pretrained_weights /home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCTransformer/results/test_run/checkpoint0399.pth
+
+
+eval 
+python eval_hct_pooling.py --arch vit_small --server mini_pooling --partition test --checkpoint_key student --ckp_path /home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCTransformer/results/mini_image  --pretrained_weights 1 --num_shots 5
+
+python eval_hct_first.py --arch vit_small --server mini --partition test --checkpoint_key student --ckp_path /home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCTransformer/results/test_run --num_shots 5
+
+
+# sota path /home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCTransformer/checkpoints_first/
+
+/home/ubuntu/lxd-workplace/tpj/FewShotLearning/HCTransformer/log/checkpoint0399.pth
+python eval_hct_first.py --arch vit_small --server fs --partition meta-test --checkpoint_key student --ckp_path /home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCTransformer/checkpoints_first/ --num_shots 5
+
+python eval_hct_pooling.py --arch vit_small --server fs_pooling --partition meta-test --checkpoint_key student --ckp_path ./rubbish  --pretrained_weights 1 --num_shots 1
+
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.0-1_all.deb
+
+python  main_hct_first.py --arch vit_small --data_path /home/ubuntu/lxd-workplace/lzy/FewShotLearning/dataset/Mini-ImageNet/train_train --output_dir /home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph/results/miniImageNet
+
+python  main_hct_first.py --arch vit_small --output_dir /home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph/results/miniImageNet

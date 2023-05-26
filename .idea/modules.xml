@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../DepthEstimation/.idea/DepthEstimation.iml" filepath="$PROJECT_DIR$/../../DepthEstimation/.idea/DepthEstimation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/HCT_graph.iml" filepath="$PROJECT_DIR$/.idea/HCT_graph.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../HCTransformers-main/.idea/HCTransformers-main.iml" filepath="$PROJECT_DIR$/../HCTransformers-main/.idea/HCTransformers-main.iml" />
+      <module fileurl="file://$USER_HOME$/Desktop/zy_lab/.idea/example.iml" filepath="$USER_HOME$/Desktop/zy_lab/.idea/example.iml" />
+    </modules>
+  </component>
+</project>
