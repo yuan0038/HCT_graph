@@ -1047,7 +1047,7 @@ def multi_scale(samples, model):
     v /= v.norm()
     return v
 
-from tensorboardX import SummaryWriter
+#from tensorboardX import SummaryWriter
 writer = None
 
 def set_writer(output_dir):

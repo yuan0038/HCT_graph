@@ -4,7 +4,6 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="jdk" jdkName=".7_HCT_GRAPH" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="HCTransformers-main" />
     <orderEntry type="module" module-name="example" />
     <orderEntry type="module" module-name="DepthEstimation" />
   </component>

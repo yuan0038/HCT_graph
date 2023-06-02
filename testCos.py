@@ -117,5 +117,5 @@ if __name__ == '__main__':
     parser.add_argument('--pretrained_weights', default='/home/heyj/dino/checkpoint_tiered/checkpoint.pth', type=str,
                         help="Path to pretrained weights to evaluate.")
     args = parser.parse_args()
-    pretrained_weights = '/home/heyj/dino/checkpoint_tiered/'
+    pretrained_weights = '/home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph/results/miniImageNet84_graph'
     testCos(args,66,1,pretrained_weights)

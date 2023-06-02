@@ -21,3 +21,11 @@ wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/
 python  main_hct_first.py --arch vit_small --data_path /home/ubuntu/lxd-workplace/lzy/FewShotLearning/dataset/Mini-ImageNet/train_train --output_dir /home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph/results/miniImageNet
 
 python  main_hct_first.py --arch vit_small --output_dir /home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph/results/miniImageNet
+
+
+python  -m torch.distributed.launch --nproc_per_node=5 main_hct_first.py --arch vit_small  --output_dir /home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph/results/miniImageNet84_graph_vit_384
+
+
+# eval first stage on the test graph
+python eval_hct_first.py --arch vit_small --server mini --partition test --checkpoint_key student --ckp_path /home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph/results/miniImageNet84_graph
+export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python

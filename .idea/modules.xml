@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../../DepthEstimation/.idea/DepthEstimation.iml" filepath="$PROJECT_DIR$/../../DepthEstimation/.idea/DepthEstimation.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/HCT_graph.iml" filepath="$PROJECT_DIR$/.idea/HCT_graph.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../HCTransformers-main/.idea/HCTransformers-main.iml" filepath="$PROJECT_DIR$/../HCTransformers-main/.idea/HCTransformers-main.iml" />
       <module fileurl="file://$USER_HOME$/Desktop/zy_lab/.idea/example.iml" filepath="$USER_HOME$/Desktop/zy_lab/.idea/example.iml" />
     </modules>
   </component>

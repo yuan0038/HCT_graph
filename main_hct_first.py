@@ -16,12 +16,12 @@ import torch.backends.cudnn as cudnn
 import torch.nn.functional as F
 from torchvision import datasets, transforms
 from torchvision import models as torchvision_models
-os.environ['CUDA_VISIBLE_DEVICES']='6,7'
+os.environ['CUDA_VISIBLE_DEVICES']='0,1,2,3,4,6,7'
 
 import utils
 import vit_graph as vits
 from vision_transformer_attn import DINOHead
-from DinoDataloader import GraphDataset_offline
+from DinoDataloader import GraphDataset_offline, MiniImageNet_Graph, My_collate_fn
 import warnings
 warnings.filterwarnings("ignore")
 from  tensorboardX import SummaryWriter
@@ -43,7 +43,9 @@ def get_args_parser():
         values leads to better performance but requires more memory. Applies only
         for ViTs (vit_tiny, vit_small and vit_base). If <16, we recommend disabling
         mixed precision training (--use_fp16 false) to avoid unstabilities.""")
-    parser.add_argument('--embed_dim',type=int,default=12)
+    parser.add_argument('--embed_dim',type=int,default=384)
+    parser.add_argument('--batch_size_per_gpu', default=16, type=int,
+                        help='Per-GPU batch-size : number of distinct images loaded on one GPU.')
     parser.add_argument('--out_dim', default=8192, type=int, help="""Dimensionality of
         the DINO head output. For complex and large datasets large values (like 65k) work well.""")
     parser.add_argument('--norm_last_layer', default=True, type=utils.bool_flag,
@@ -79,8 +81,7 @@ def get_args_parser():
     parser.add_argument('--clip_grad', type=float, default=3, help="""Maximal parameter
         gradient norm if using gradient clipping. Clipping with norm .3 ~ 1.0 can
         help optimization for larger ViT architectures. 0 for disabling.""")
-    parser.add_argument('--batch_size_per_gpu', default=16, type=int,
-        help='Per-GPU batch-size : number of distinct images loaded on one GPU.')
+
     parser.add_argument('--epochs', default=400, type=int, help='Number of epochs of training.')
     parser.add_argument('--freeze_last_layer', default=1, type=int, help="""Number of epochs
         during which we keep the output layer fixed. Typically doing so during
@@ -160,7 +161,10 @@ def train_dino(args):
         args.local_crops_scale,
         args.local_crops_number,
     )
-    dataset =GraphDataset_offline(args)
+    dataset_dir = '/home/ubuntu/lxd-workplace/lzy/FewShotLearning/dataset/Mini-Imagenet_84_graph/'
+    dataset = MiniImageNet_Graph(dataset_dir, set_type='train')
+
+
     sampler = torch.utils.data.DistributedSampler(dataset, shuffle=True)
     data_loader = torch.utils.data.DataLoader(
         dataset,
@@ -169,8 +173,20 @@ def train_dino(args):
         num_workers=args.num_workers,
         pin_memory=True,
         drop_last=True,
-        prefetch_factor=8
+        prefetch_factor=2,
+        collate_fn=My_collate_fn
     )
+    # dataset = GraphDataset_offline(args,'train')
+    # sampler = torch.utils.data.DistributedSampler(dataset, shuffle=True)
+    # data_loader = torch.utils.data.DataLoader(
+    #     dataset,
+    #     sampler=sampler,
+    #     batch_size=args.batch_size_per_gpu,
+    #     num_workers=args.num_workers,
+    #     pin_memory=True,
+    #     drop_last=True,
+    #     prefetch_factor=8
+    # )
     print(f"Data loaded: there are {len(dataset)} images.")
 
     writer = SummaryWriter()
@@ -186,10 +202,11 @@ def train_dino(args):
             is_student=True
         )
 
-        teacher = vits.__dict__[args.arch](in_chans=args.in_chans,embed_dim=args.embed_dim,)
+        teacher = vits.__dict__[args.arch](in_chans=args.in_chans,embed_dim=args.embed_dim)
         embed_dim = student.embed_dim
     # if the network is a XCiT
-
+        print(student)
+        print(f"total params {sum(p.numel() for p in student.parameters() if p.requires_grad)}")
     else:
         print(f"Unknow architecture: {args.arch}")
 
@@ -206,6 +223,8 @@ def train_dino(args):
     )
 
     student, teacher = student.cuda(), teacher.cuda()
+    #print(student)
+
     # synchronize batch norms (if any)
     if utils.has_batchnorms(student):
         student = nn.SyncBatchNorm.convert_sync_batchnorm(student)
@@ -235,7 +254,7 @@ def train_dino(args):
         args.epochs,
     ).cuda()
     surrogate_loss1 = SurrogateLoss(args.local_crops_number + 2, feat_dim=8192, num_classes=64).cuda()
-    surrogate_loss2 = SurrogateLoss(args.local_crops_number + 2, feat_dim=12, num_classes=64).cuda()
+    surrogate_loss2 = SurrogateLoss(args.local_crops_number + 2, feat_dim=384, num_classes=64).cuda()
 
     # ============ preparing optimizer ... ============
     params_groups = utils.get_params_groups(student)
@@ -273,7 +292,7 @@ def train_dino(args):
     # ============ optionally resume training ... ============
     to_restore = {"epoch": 0}
     utils.restart_from_checkpoint(
-        os.path.join(args.output_dir, "checkpoint0165.pth"),
+        os.path.join(args.output_dir, "checkpoint0230.pth"),
         run_variables=to_restore,
         student=student,
         teacher=teacher,
@@ -339,10 +358,13 @@ def train_one_epoch(student, teacher, teacher_without_ddp, dino_loss,surrogate_l
             param_group["lr"] = lr_schedule[it]
             if i == 0:  # only the first group is regularized
                 param_group["weight_decay"] = wd_schedule[it]
-
+        #print("lenx",len(images))
         # move images to gpu
         images = [im.cuda(non_blocking=True) for im in images]
+        #print('xxx',len(images))
         labels = labels.cuda()
+        #print("label",labels.shape)
+
         # teacher and student forward passes + compute dino loss
         with torch.cuda.amp.autocast(fp16_scaler is not None):
             teacher_output = teacher(images[:2])  # only the 2 global views pass through the teacher

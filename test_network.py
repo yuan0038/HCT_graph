@@ -45,7 +45,7 @@ def get_args_parser():
         values leads to better performance but requires more memory. Applies only
         for ViTs (vit_tiny, vit_small and vit_base). If <16, we recommend disabling
         mixed precision training (--use_fp16 false) to avoid unstabilities.""")
-    parser.add_argument('--embed_dim',type=int,default=12)
+    parser.add_argument('--embed_dim',type=int,default=384)
     parser.add_argument('--out_dim', default=8192, type=int, help="""Dimensionality of
         the DINO head output. For complex and large datasets large values (like 65k) work well.""")
     parser.add_argument('--norm_last_layer', default=True, type=utils.bool_flag,
@@ -131,23 +131,23 @@ def train_dino(args):
     cudnn.benchmark = True
 
     # ============ preparing data ... ============
-    dataset = GraphDataset(args)
-    data_loader = torch.utils.data.DataLoader(
-        dataset,
-        batch_size=args.batch_size_per_gpu,
-        num_workers=args.num_workers,
-        pin_memory=True,
-        drop_last=True,
-        prefetch_factor=2
-    )
-    print(f"Data loaded: there are {len(dataset)} images.")
+    # dataset = GraphDataset(args)
+    # data_loader = torch.utils.data.DataLoader(
+    #     dataset,
+    #     batch_size=args.batch_size_per_gpu,
+    #     num_workers=args.num_workers,
+    #     pin_memory=True,
+    #     drop_last=True,
+    #     prefetch_factor=2
+    # )
+    # print(f"Data loaded: there are {len(dataset)} images.")
 
     # ============ building student and teacher networks ... ============
     # we changed the name DeiT-S for ViT-S to avoid confusions
     args.arch = args.arch.replace("deit", "vit")
     # if the network is a Vision Transformer (i.e. vit_tiny, vit_small, vit_base)
 
-    student = vit_small(in_chans=11, embed_dim=12,is_student=True)
+    student = vit_small(in_chans=11, embed_dim=args.embed_dim,is_student=True)
     print(student)
     print(sum(p.numel() for p in student.parameters() if p.requires_grad))
     return

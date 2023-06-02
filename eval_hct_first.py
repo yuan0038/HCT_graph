@@ -13,12 +13,12 @@ from testCos import testCos
 
 import utils
 import vit_graph as vits
-
+os.environ["CUDA_VISIBLE_DEVICES"]='5'
 server_dict = {
     'mini':{
         'dataset': 'mini',
         'data_path': '/home/ubuntu/lxd-workplace/lzy/FewShotLearning/dataset/Mini_Imagenet_Multicrop/val',     # Need to modify here
-        'ckp_path': '/home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph/results/miniImageNet/'},   # Need to be passed in commandline args
+        'ckp_path': '/home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph/results/miniImageNet84_graph'},   # Need to be passed in commandline args
     'fs':{
         'dataset': 'fs',
         'data_path': '/home/ubuntu/lxd-workplace/lzy/FewShotLearning/dataset/cifar_fs/',
@@ -41,17 +41,12 @@ def eval_linear(args):
     cudnn.benchmark = True
 
     # ============ preparing data ... ============
-    val_transform = pth_transforms.Compose([
-        pth_transforms.Resize(256, interpolation=3),
-        pth_transforms.CenterCrop(224),
-        pth_transforms.ToTensor(),
-        pth_transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
-    ])
-    dataset_test = DinoDataloader.GraphDataset_offline(args,'val')
+    data_dir='/home/ubuntu/lxd-workplace/lzy/FewShotLearning/dataset/Mini-Imagenet_84_graph/'
+    dataset_test = DinoDataloader.MiniImageNet_Graph(data_dir,set_type='test')
     #dataset_test = datasets.ImageFolder(os.path.join(server['data_path'], args.partition), transform=val_transform)
     test_loader = torch.utils.data.DataLoader(
         dataset_test,
-        batch_size=args.batch_size_per_gpu,
+        batch_size=1,
         num_workers=args.num_workers,
         pin_memory=True,
     )
@@ -60,7 +55,7 @@ def eval_linear(args):
     # ============ building network ... ============
     # if the network is a Vision Transformer (i.e. vit_tiny, vit_small, vit_base)
     if args.arch in vits.__dict__.keys():
-        model = vits.__dict__[args.arch](patch_size=args.patch_size, num_classes=0,in_chans=11,embed_dim=12)
+        model = vits.__dict__[args.arch](patch_size=args.patch_size, num_classes=0,in_chans=11,embed_dim=384)
         embed_dim = model.embed_dim * (args.n_last_blocks + int(args.avgpool_patchtokens))
     # if the network is a XCiT
     elif "xcit" in args.arch:
@@ -95,7 +90,7 @@ def eval_linear(args):
     #             checkdir = checkdir[0:1] + checkdir[i:]
     #         break
     
-    checkdir = ['checkpoint0399.pth']
+    checkdir = ['checkpoint0240.pth']
     #checkdir = ['checkpoint_mini.pth']
    # checkdir =['checkpoint_cifar_fs.pth']
     print(f"checkpoints: {checkdir}")
@@ -106,7 +101,8 @@ def eval_linear(args):
     for i in range(len(checkdir)):
         print(f"Evaluating pretrained weight in {checkdir[i]}")
         if '.pth' in checkdir[i]:
-            args.pretrained_weights = os.path.join(server['ckp_path'],checkdir[i])
+            args.pretrained_weights = '/home/ubuntu/lxd-workplace/lzy/FewShotLearning/HCT_graph/results/miniImageNet84_graph_vit_384_1_norm/checkpoint0240.pth'
+            #args.pretrained_weights = os.path.join(server['ckp_path'],checkdir[i])
             # server['pretrained_weights'] = pretrained_weights + checkdir[i]
             
             if not checkdir[i][-8:-4].isdigit():
@@ -114,7 +110,7 @@ def eval_linear(args):
             else:
                 epoch = int(checkdir[i][-8:-4])
 
-            outfile = os.path.join(server['ckp_path'],'{}_224_{}_{}.hdf5'.format(args.partition,epoch, args.checkpoint_key))
+            outfile = os.path.join(server['ckp_path'],'{}_84_{}_{}.hdf5'.format(args.partition,epoch, args.checkpoint_key))
             if not os.path.isfile(outfile) or args.isfile == 1:
                 utils.load_pretrained_weights(model, args.pretrained_weights, args.checkpoint_key, args.arch,
                                               args.patch_size)
@@ -184,7 +180,7 @@ if __name__ == '__main__':
     parser.add_argument('--arch', default='vit_small', type=str, help='Architecture')
     parser.add_argument('--patch_size', default=8, type=int, help='Patch resolution of the model.')
 
-    parser.add_argument("--checkpoint_key", default="teacher", type=str, help='Key to use in the checkpoint (example: "teacher")')
+    parser.add_argument("--checkpoint_key", default="student", type=str, help='Key to use in the checkpoint (example: "teacher")')
 
     parser.add_argument("--lr", default=0.001, type=float, help="""Learning rate at the beginning of
         training (highest LR used during training). The learning rate is linearly scaled
@@ -202,7 +198,7 @@ if __name__ == '__main__':
     parser.add_argument('--local_nodes')
     # few-shot args
     parser.add_argument('--num_ways', default=5, type=int)
-    parser.add_argument('--num_shots', default=1, type=int)
+    parser.add_argument('--num_shots', default=5, type=int)
     parser.add_argument('--seed', default=777, type=int)
 
     # evaluation args
@@ -217,9 +213,9 @@ if __name__ == '__main__':
     parser.add_argument('--ckp_path',default='',type=str,
                         help='path to the checkpoint of hct')
     parser.add_argument('--pretrained_weights', default='', type=str, help="Path to pretrained weights to evaluate.")
-    parser.add_argument('--global_nodes', type=int, default=1000)
 
-    parser.add_argument('--data_path', type=str, default='/home/ubuntu/lxd-workplace/lzy/FewShotLearning/dataset/Mini_Imagenet_Multicrop/val')
+
+    parser.add_argument('--data_path', type=str, default='/home/ubuntu/lxd-workplace/lzy/FewShotLearning/dataset/Mini-Imagenet_84_graph/test')
     args = parser.parse_args()
     # setup ckp_path
     server_dict[args.server]['ckp_path'] = args.ckp_path

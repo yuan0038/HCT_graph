@@ -11,7 +11,6 @@ import torch
 import torch.nn as nn
 
 import utils
-from main_hct_first import DINOLoss
 from utils import trunc_normal_
 
 def drop_path(x, drop_prob: float = 0., training: bool = False):
@@ -69,6 +68,10 @@ class Attention(nn.Module):
 
     def forward(self, x):
         B, N, C = x.shape
+        #print("x.shape",x.shape) #([16, 2866, 128])
+
+        #print(self.qkv(x).shape) #([16, 2866, 384])
+
         qkv = self.qkv(x).reshape(B, N, 3, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)
         q, k, v = qkv[0], qkv[1], qkv[2]
         attn = (q @ k.transpose(-2, -1)) * self.scale
@@ -96,6 +99,7 @@ class Block(nn.Module):
         self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=drop)
 
     def forward(self, x, return_attention=False):
+       # print("x",x.shape)
         y, attn = self.attn(self.norm1(x))
         x = x + self.drop_path(y)
         x = x + self.drop_path(self.mlp(self.norm2(x)))
